@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # Laravel Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ANS-system
+    restart: always
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+
+  # PHPMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: ANS-phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    ports:
+      - "8080:80"
+    restart: always
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  # MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: laravel_ans
+    restart: always
+    environment:
+      MYSQL_DATABASE: anssyste_dev
+      MYSQL_USER: ans
+      MYSQL_PASSWORD: ans
+      MYSQL_ROOT_PASSWORD: root_ans
+    ports:
+      - "3306:3306"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
